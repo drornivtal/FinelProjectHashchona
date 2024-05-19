@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>השכונה</title>
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link href="../CSS/css.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="../JS/ajaxCalls.js"></script>
+</head>
+
+<script>
+
+    $(document).ready(function () {
+        server = `https://proj.ruppin.ac.il/cgroup62/test2/tar1/api/`;
+
+        getCategories();
+   
+       // $("#submmitBTN").click(submitLogIn)
+        getRequest();
+    })
+
+
+    function getCategories() {
+
+        api = server + "RequestsForHelp/GetAllCategories";
+
+        ajaxCall("GET", api, "", getSCBcat, getECBcat);
+
+    }
+
+    function getSCBcat(categoryList) {
+
+        let tempStr = "";
+
+        for (var i = 0; i < categoryList.length; i++) {
+
+            tempStr += ` <div class="card">
+                             <div class="circle" id="${categoryList[i].categoyID}">
+                                 <h3>${categoryList[i].catName}</h3>
+                             </div>
+                         </div>`;
+        }
+        $("#Category").html(tempStr);
+
+
+    }
+
+    function getECBcat(errorFromServ) {
+        console.log(errorFromServ);
+
+    }
+    function getRequest() {
+        api = server + "";
+
+        ajaxCall("GET", api, "", getSCB, getECB);
+    }
+
+    function getSCB(RequestsList) {
+        console.log(RequestsList);
+    }
+
+    function getECB(errorFromServ) {
+        console.log(errorFromServ);
+    }
+
+    function submitRequest() {
+        let Request = {
+
+            CategoryID: $("#Category").val(),
+            DueDate: $("#date").DueDate(),
+            DueTime: $("#time").DueTime(),
+            ReqDescription: $("#Description").val()
+
+        }
+
+        api = server + "api/logIn";
+
+        ajaxCall("POST", api, JSON.stringify(logIn), postSCB, postECB)
+    }
+
+    function postSCB(objFromServ) {
+        console.log(objFromServ);
+    }
+
+    function postECB(errorFromServ) {
+        console.log(errorFromServ);
+    }
+
+</script>
+
+<body>
+    <h1>השכונה</h1>
+    <h2>בחר קטגוריה</h2>
+    <p class="chosenCommunity"> רופין</p>
+
+    <div id="container">
+        <form id="userForm">
+            <div id="Category" class="card-container">
+               
+            </div>
+            <table>
+                <tr>
+                    <td>
+                        <strong>תאריך</strong>
+                        <input type="date" id="date" required> <br /><br />
+                </tr>
+                <tr>
+                    <td>
+                        <strong>שעה</strong>
+                        <input type="time" id="time" required> <br /><br />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>תיאור קצר</strong><br>
+                        <textarea rows="10" cols="30" maxlength="100" id="Description" placeholder="תאר מה הסיוע שאתה צריך" required></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button id="submmitBTN"> יאללה לעזור</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

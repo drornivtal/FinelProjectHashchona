@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>השכונה</title>
+    <script src="../Scripts/AjaxCalls.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  
+    <link href="../CSS/css.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
+<script>
+    $(document).ready(function () {
+        server = `https://proj.ruppin.ac.il/cgroup62/test2/tar1/api/`;
+        
+        
+        //$("#submmitBTN").click(submitLogIn)
+        getManager();
+
+        console.log("document is ready")
+
+        //$("#submmitBTN").click(function () {
+        //    console.log("button clicked")
+        //    window.location.href = "OpenACommunity.html"
+        //})
+
+        $("#userForm").submit(function () {
+            window.location.href= "OpenACommunity.html" ;
+            return false;
+        });
+    })
+
+   
+
+    function getManager() {
+        api = server + "";
+
+        ajaxCall("GET", api, "", getSCB, getECB)
+    }
+
+    function getSCB(ManagerList) {
+        console.log(ManagerList);
+    }
+
+    function getECB(errorFromServ) {
+        console.log(errorFromServ);
+    }
+
+    function submitCommunityManager() {
+        let CommunityManager = {
+            ProfilePic: $("#Picture")[0].files[0],
+            FirstName: $("#FName").val(),
+            LastName: $("#LName").val(),
+            PhoneNumber: $("#PhoneNum").val(),
+            uPassword: $("#Password").val(),
+            City: $("#City").val(),
+            uDescription: $("#Description").val()
+    
+        }
+
+        api = server + "api/logIn";
+
+        ajaxCall("POST", api, JSON.stringify(CommunityManager), postSCB, postECB)
+    }
+
+    function postSCB(objFromServ) {
+        console.log(objFromServ);
+       window.location.href = "OpenACommunity.html"
+    }
+
+    function postECB(errorFromServ) {
+        console.log(errorFromServ);
+    }
+
+    //document.getElementById("#submitButton").addEventListener("click", function () {
+    //    window.location.href = "OpenACommunity.html";
+    //});
+</script>
+
+<body>
+    <h1>השכונה</h1>
+    <h2>הרשמה למנהל קהילה</h2>
+
+    <div id="container">
+        <form id="userForm">
+            <table>
+                <tr>
+                    <td>
+                        <strong>תמונה:</strong>
+
+                        <input type="file" id="Picture" accept="image/*" required><br /><br />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>שם פרטי:</strong>
+
+                        <input type="text" id="FName" placeholder="Enter your first name" required><br /><br />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <strong>שם משפחה:</strong>
+
+                        <input type="tel" id="LName" placeholder="Enter your last name" required><br /><br />
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td>
+                        <strong>מספר טלפון:</strong>
+
+                        <input type="tel" id="PhoneNum" placeholder="Enter your phone number" required><br /><br />
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td>
+                        <strong>סיסמה:</strong>
+
+                        <input type="password" id="Password" placeholder="Enter Password" required><br /><br />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <strong>עיר/ישוב:</strong>
+
+                        <input type="text" id="City" placeholder="Enter city" required><br /><br />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <strong>קצת על עצמך:</strong>
+                        <textarea rows="10" cols="22" maxlength="50" id="Description" placeholder="Tell us about yourself" required></textarea>
+                        <br /><br />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>   
+                         <button type="submit" id="submmitBTN"> לשלב הבא</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <!--CDN:-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+    <style>
+        .form-select {
+            display: block;
+            width: 200px;
+            padding: .375rem 2.25rem .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right .75rem center;
+            background-size: 16px 12px;
+            border: 1px solid #a3a3a3;
+            border-radius: .25rem;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+    </style>
+
+    <!--Ajax Call:-->
+    <script src="../JS/ajaxCalls.js"></script>
+    <!--<------------->
+    <script>
+        $(document).ready(function () {
+           
+           server = `https://proj.ruppin.ac.il/cgroup62/test2/tar1/api/`;
+
+
+            $("#PendingCommunities").on('click',function () {
+
+                renderAllPendingCommunities();
+            });
+
+
+            $("#ApprovedCommunities").on('click',function () {
+
+                renderAllApprovedCommunitiesCommunities();
+            });
+
+
+
+            $("#usersTable").on('click', '.ApprovedBtn',function () {
+          
+
+                var CommunityID = $(this).data('communityid');
+
+                console.log(CommunityID);
+
+               apiUpdateStatus = server + 'Communities/UpdateCommunityApprovedStatus';
+
+                  let update = {
+       
+                      "communityID": CommunityID,
+                      "approvalStatus": "Approved"
+                     }
+
+                ajaxCall("PUT", apiUpdateStatus, JSON.stringify(update) , PostSCBAp, PostECBAp);
+
+            }); 
+            
+            
+            $("#usersTable").on('click', '.RejectedBTN',function () {
+          
+
+                var CommunityID = $(this).data('communityid');
+
+                console.log(CommunityID);
+
+               apiUpdateStatus = server + 'Communities/UpdateCommunityApprovedStatus';
+
+               let update = {
+                   
+                      "communityID": CommunityID,
+                      "approvalStatus": "Rejected"
+               }
+
+                ajaxCall("PUT", apiUpdateStatus, JSON.stringify(update) , PostSCBreg, PostECBreg);
+
+            });
+
+            $("#editDiv").hide();
+
+        });
+
+
+        function PostSCBAp(ans) {
+            alert('Approved');
+            renderAllPendingCommunities();
+        }
+        function PostECBAp(err) {
+            console.log(err);
+        } 
+        
+        function PostSCBreg(ans) {
+            alert('Rejected');
+            renderAllPendingCommunities();
+        }
+        function PostECBreg(err) {
+            console.log(err);
+        }
+
+        function renderAllPendingCommunities() {
+            api = server + 'Communities/ReadPendingCommunities';
+            ajaxCall("GET", api, "", GetSCB, GetECB)
+        }
+
+        function GetSCB(communityList) {      
+             
+
+            let strCommunitiesTable = `<thead>
+                < tr >
+                <th>ID</th>
+                <th>Name</th>
+                <th>city</th>
+                <th>location</th>
+                <th>Description</th>
+                <th>primaryPic</th>
+                <th>status</th>
+                <th></th>
+                </tr >
+                </thead > `;
+            strCommunitiesTable += ` <tbody>`;
+
+            for (var i = 0; i < communityList.length; i++) {
+
+                
+
+                strCommunitiesTable += `  <tr>
+                <td>${communityList[i].communityId}</td>
+                <td>${communityList[i].name}</td>
+                <td >${communityList[i].city}</td>
+                <td >${communityList[i].location}</td>
+                <td >${communityList[i].description}</td>
+                <td >${communityList[i].primaryPic}</td>
+                <td class="status" data-userid="${communityList[i].communityId}" data-isactive="true" >${communityList[i].status}</td>
+                <td>
+                <button type="button" id="${i}" data-communityID="${communityList[i].communityId}" class="btn btn-success ApprovedBtn">Approved</button>
+                <button type="button" id="${i}" data-communityID="${communityList[i].communityId}" class="deleteBtn btn-danger btn RejectedBTN">Rejected</button>
+                </td>
+                </tr>`
+                
+
+            }
+
+            strCommunitiesTable += `</tbody>`;
+
+            $('#usersTable').html(strCommunitiesTable);
+
+         
+        }
+
+        function GetECB(err) {
+            console.log(err)
+        }
+
+
+        function renderAllApprovedCommunitiesCommunities() {
+              api = server + 'Communities/ReadApprovedCommunities';
+              ajaxCall("GET", api, "", GetSCBap, GetECBap) 
+          }
+
+             function GetSCBap(communityList){
+                   let strCommunitiesTable = `<thead>
+                                      < tr >
+                                      <th>ID</th>
+                                      <th>Name</th>
+                                      <th>city</th>
+                                      <th>location</th>
+                                      <th>Description</th>
+                                      <th>primaryPic</th>
+                                      <th>status</th>
+                                      <th></th>
+                                      </tr >
+                                      </thead > `;
+                                  strCommunitiesTable += ` <tbody>`;
+
+                                  for (var i = 0; i < communityList.length; i++) {
+
+      
+
+                                      strCommunitiesTable += `  <tr id="${communityList[i].communityId}">
+                                      <td>${communityList[i].communityId}</td>
+                                      <td>${communityList[i].name}</td>
+                                      <td >${communityList[i].city}</td>
+                                      <td >${communityList[i].location}</td>
+                                      <td >${communityList[i].description}</td>
+                                      <td >${communityList[i].primaryPic}</td>
+                                      <td class="status" data-userid="${communityList[i].communityId}" data-isactive="true" >${communityList[i].status}</td>
+                                      <td>
+                                      <button type="button" id="${i}" data-userid="${communityList[i].communityId}" class="btn btn-outline-info EditBtn">Edit</button>
+                                      <button type="button" id="${i}" data-userid="${communityList[i].communityId}" class="deleteBtn btn-danger btn RejectedBTN">Delete</button>
+                                      </td>
+                                      </tr>`
+      
+                                      
+                                  }
+
+                                  strCommunitiesTable += `</tbody>`;
+
+                                  $('#usersTable').html(strCommunitiesTable);
+             } 
+             
+             function GetECBap(err){
+
+             }
+        
+
+
+    </script>
+    <style>
+        #welcomwA {
+            color: red;
+        }
+    </style>
+</head>
+    <body>
+        <div class="container">
+
+            <h1 id="welcomwA">שלום לך מנהל!</h1><br /><br />
+
+            <button type="button" id="PendingCommunities" class="btn btn-outline-primary">Pending Communities</button><br /><br />
+            <button type="button" id="ApprovedCommunities" class="btn btn-outline-primary">Approved Communities</button><br /><br />
+
+            <table id="usersTable" class="table table-hover">
+            </table>
+
+            <table>
+            </table>
+
+            
+          
+            <div id="editDiv">
+                <form id="carForm">
+                    <div class="form-group row">
+                        <div class="form-group col-sm-3">
+                            <label for="Name"><span class="red-star">★ </span>Name</label>
+                            <input type="text" class="form-control" id="manufacturer" placeholder="Enter the manufacturer name" required>
+                        </div>
+
+
+                        <div class="form-group col-sm-3">
+                            <label for="city"><span class="red-star">★ </span>city</label>
+                            <input type="text" class="form-control" id="city" placeholder="Enter the model name" required>
+                        </div>
+
+
+                    
+
+                        <div class="form-group col-sm-3">
+                            <label for="location"><span class="red-star">★ </span>location</label>
+                            <input type="text" class="form-control" id="location" placeholder="Enter the model name" required>
+                        </div>
+
+
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="form-group col-sm-8">
+                            <label for="description">Description</label>
+                            <textarea rows="6" class="form-control" id="description" placeholder="Enter the description"></textarea>
+                        </div>
+
+                        <div class="form-group col-sm-4">
+                            
+                            <label for="primaryPic"><span class="red-star">★ </span>primaryPic</label>
+                            <input type="text" class="form-control" id="primaryPic" placeholder="Enter the model name" required>
+                            <img src="images/car.jpg" id="image" />
+                        </div>
+
+                    </div><br />
+
+                    <button type="submit" class="btn btn-primary btn-lg" id="saveBTN">Save</button>
+                    <input type="button" class="btn btn-warning btn-lg" id="cancelSaveBTN" value="Cancel" />
+                </form>
+            </div>
+        </div>
+
+    </body>
+</html>
